@@ -42,27 +42,9 @@ jobs:
         python -m pip install --upgrade pip setuptools wheel
         pip install cython buildozer
     
-    - name: Create Android SDK directory
-      run: |
-        mkdir -p /home/runner/.buildozer/android/platform/android-sdk
-        mkdir -p /home/runner/.buildozer/android/platform/android-sdk/build-tools
-        mkdir -p /home/runner/.buildozer/android/platform/android-sdk/platforms
-    
-    - name: Copy Android SDK
-      run: |
-        cp -r /usr/local/lib/android/sdk/build-tools/* /home/runner/.buildozer/android/platform/android-sdk/build-tools/ 2>/dev/null || true
-        cp -r /usr/local/lib/android/sdk/platforms/* /home/runner/.buildozer/android/platform/android-sdk/platforms/ 2>/dev/null || true
-        cp -r /usr/local/lib/android/sdk/platform-tools/* /home/runner/.buildozer/android/platform/android-sdk/platform-tools/ 2>/dev/null || true
-    
-    - name: Set permissions
-      run: |
-        chmod -R 755 /home/runner/.buildozer/android/platform/android-sdk
-    
     - name: Build with Buildozer
       working-directory: android_app
       env:
-        ANDROID_HOME: /home/runner/.buildozer/android/platform/android-sdk
-        ANDROID_SDK_ROOT: /home/runner/.buildozer/android/platform/android-sdk
         JAVA_HOME: /usr/lib/jvm/temurin-17-jdk-amd64
       run: |
         buildozer android debug
