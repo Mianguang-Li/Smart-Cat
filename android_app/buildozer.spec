@@ -1,13 +1,13 @@
 [app]
 
 # (str) Title of your application
-title = My Kivy App
+title = Smart Calculator
 
 # (str) Package name
-package.name = mykivyapp
+package.name = smartcalculator
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.myapp
+package.domain = org.smartcat
 
 # (str) Source code where the main.py live
 source.dir = .
@@ -21,12 +21,6 @@ version = 1.0.0
 # (list) Application requirements
 requirements = python3,kivy
 
-# (str) Presplash of the application
-#presplash.filename = %(source.dir)s/data/presplash.png
-
-# (str) Icon of the application
-#icon.filename = %(source.dir)s/data/icon.png
-
 # (str) Supported orientation (landscape, portrait or all)
 orientation = portrait
 
@@ -37,7 +31,7 @@ fullscreen = 0
 android.permissions = INTERNET
 
 # (int) Target Android API, should be as high as possible.
-android.api = 33
+android.api = 31
 
 # (int) Minimum API your APK will support.
 android.minapi = 21
@@ -56,6 +50,12 @@ android.archs = arm64-v8a, armeabi-v7a
 
 # (bool) enables Android auto backup feature (Android API >=23)
 android.allow_backup = True
+
+# (str) Gradle version
+android.gradle_version = 7.6.3
+
+# (str) Android Gradle Plugin version
+android.android_gradle_plugin_version = 7.4.2
 
 [buildozer]
 
