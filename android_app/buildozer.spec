@@ -18,7 +18,7 @@ source.include_exts = py,png,jpg,kv,atlas,json,ttf,otf,woff,woff2
 # (str) Application versioning
 version = 1.0.0
 
-# (list) Application requirements - use prebuilt
+# (list) Application requirements
 requirements = python3,kivy
 
 # (str) Supported orientation (landscape, portrait or all)
@@ -37,7 +37,7 @@ android.api = 27
 android.minapi = 21
 
 # (str) Android NDK version - use older stable version
-android.ndk = 23b
+android.ndk = 19b
 
 # (bool) If True, then skip trying to update the Android sdk
 android.skip_update = False
@@ -46,7 +46,7 @@ android.skip_update = False
 android.accept_sdk_license = True
 
 # (str) The Android arch to build for
-android.archs = arm64-v8a
+android.archs = armeabi-v7a
 
 [buildozer]
 
