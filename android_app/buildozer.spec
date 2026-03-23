@@ -18,7 +18,7 @@ source.include_exts = py,png,jpg,kv,atlas,json,ttf,otf,woff,woff2
 # (str) Application versioning
 version = 1.0.0
 
-# (list) Application requirements
+# (list) Application requirements - use prebuilt
 requirements = python3,kivy
 
 # (str) Supported orientation (landscape, portrait or all)
@@ -30,11 +30,14 @@ fullscreen = 0
 # (list) Permissions
 android.permissions = INTERNET
 
-# (int) Target Android API, should be as high as possible.
-android.api = 33
+# (int) Target Android API
+android.api = 27
 
 # (int) Minimum API your APK will support.
 android.minapi = 21
+
+# (str) Android NDK version - use older stable version
+android.ndk = 23b
 
 # (bool) If True, then skip trying to update the Android sdk
 android.skip_update = False
