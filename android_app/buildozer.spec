@@ -31,31 +31,19 @@ fullscreen = 0
 android.permissions = INTERNET
 
 # (int) Target Android API, should be as high as possible.
-android.api = 31
+android.api = 27
 
 # (int) Minimum API your APK will support.
 android.minapi = 21
 
-# (str) Android NDK version to use
-android.ndk = 25b
-
 # (bool) If True, then skip trying to update the Android sdk
-android.skip_update = False
+android.skip_update = True
 
 # (bool) If True, then automatically accept SDK license
 android.accept_sdk_license = True
 
 # (str) The Android arch to build for
-android.archs = arm64-v8a, armeabi-v7a
-
-# (bool) enables Android auto backup feature (Android API >=23)
-android.allow_backup = True
-
-# (str) Gradle version
-android.gradle_version = 7.6.3
-
-# (str) Android Gradle Plugin version
-android.android_gradle_plugin_version = 7.4.2
+android.archs = arm64-v8a
 
 [buildozer]
 
