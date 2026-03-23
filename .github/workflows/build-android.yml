@@ -42,7 +42,6 @@ jobs:
         python -m pip install --upgrade pip setuptools wheel
         pip install cython
         pip install buildozer
-        pip install pythonforandroid
     
     - name: Set up Android SDK
       run: |
