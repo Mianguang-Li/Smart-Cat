@@ -1,46 +1,112 @@
 from kivy.app import App
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
-from kivy.properties import StringProperty
 from kivy.core.window import Window
 
-# 设置窗口大小（桌面测试用）
-Window.size = (360, 640)
+Window.size = (400, 600)
 
 
-class CalculatorButton(Button):
-    """自定义计算器按钮"""
-    pass
-
-
-class Calculator(BoxLayout):
-    display_text = StringProperty('0')
-    
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+class CalculatorApp(App):
+    def build(self):
+        self.display_text = '0'
         self.current = '0'
         self.previous = ''
         self.operator = None
         self.waiting_for_operand = False
+        
+        # 主布局
+        main_layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
+        
+        # 表达式显示（显示计算过程）
+        self.expression = Label(
+            text='',
+            font_size='18sp',
+            size_hint_y=0.1,
+            color=(0.7, 0.7, 0.7, 1),
+            halign='right'
+        )
+        main_layout.add_widget(self.expression)
+        
+        # 结果显示屏
+        self.display = Label(
+            text='0',
+            font_size='48sp',
+            size_hint_y=0.15,
+            color=(1, 1, 1, 1),
+            halign='right'
+        )
+        main_layout.add_widget(self.display)
+        
+        # 按钮网格
+        grid = GridLayout(cols=4, spacing=5, size_hint_y=0.75)
+        
+        buttons = [
+            ('C', (0.3, 0.3, 0.3, 1)),
+            ('±', (0.3, 0.3, 0.3, 1)),
+            ('%', (0.3, 0.3, 0.3, 1)),
+            ('÷', (1, 0.58, 0, 1)),
+            
+            ('7', (0.2, 0.2, 0.2, 1)),
+            ('8', (0.2, 0.2, 0.2, 1)),
+            ('9', (0.2, 0.2, 0.2, 1)),
+            ('×', (1, 0.58, 0, 1)),
+            
+            ('4', (0.2, 0.2, 0.2, 1)),
+            ('5', (0.2, 0.2, 0.2, 1)),
+            ('6', (0.2, 0.2, 0.2, 1)),
+            ('-', (1, 0.58, 0, 1)),
+            
+            ('1', (0.2, 0.2, 0.2, 1)),
+            ('2', (0.2, 0.2, 0.2, 1)),
+            ('3', (0.2, 0.2, 0.2, 1)),
+            ('+', (1, 0.58, 0, 1)),
+            
+            ('0', (0.2, 0.2, 0.2, 1)),
+            ('.', (0.2, 0.2, 0.2, 1)),
+            ('=', (1, 0.58, 0, 1)),
+        ]
+        
+        for text, color in buttons:
+            btn = Button(
+                text=text,
+                font_size='24sp',
+                background_color=color,
+                background_normal='',
+                color=(1, 1, 1, 1)
+            )
+            btn.bind(on_press=self.on_button_press)
+            grid.add_widget(btn)
+        
+        main_layout.add_widget(grid)
+        return main_layout
     
-    def on_button_press(self, button_text):
-        """处理按钮按下事件"""
-        if button_text.isdigit() or button_text == '.':
-            self.input_digit(button_text)
-        elif button_text == 'C':
+    def update_expression(self):
+        """更新表达式显示"""
+        if self.operator:
+            expr = f"{self.previous} {self.operator} {self.current}"
+        else:
+            expr = ""
+        self.expression.text = expr
+    
+    def on_button_press(self, instance):
+        text = instance.text
+        
+        if text.isdigit() or text == '.':
+            self.input_digit(text)
+        elif text == 'C':
             self.clear()
-        elif button_text == '±':
+        elif text == '±':
             self.negate()
-        elif button_text == '%':
+        elif text == '%':
             self.percentage()
-        elif button_text == '=':
+        elif text == '=':
             self.calculate()
-        elif button_text in ['+', '-', '×', '÷']:
-            self.set_operator(button_text)
+        elif text in ['+', '-', '×', '÷']:
+            self.set_operator(text)
     
     def input_digit(self, digit):
-        """输入数字或小数点"""
         if self.waiting_for_operand:
             self.current = digit if digit != '.' else '0.'
             self.waiting_for_operand = False
@@ -53,45 +119,45 @@ class Calculator(BoxLayout):
                     self.current = digit
                 else:
                     self.current += digit
-        self.display_text = self.current
+        self.display.text = self.current
+        self.update_expression()
     
     def clear(self):
-        """清除所有"""
         self.current = '0'
         self.previous = ''
         self.operator = None
         self.waiting_for_operand = False
-        self.display_text = '0'
+        self.display.text = '0'
+        self.expression.text = ''
     
     def negate(self):
-        """取反"""
         if self.current != '0':
             if self.current.startswith('-'):
                 self.current = self.current[1:]
             else:
                 self.current = '-' + self.current
-            self.display_text = self.current
+            self.display.text = self.current
+            self.update_expression()
     
     def percentage(self):
-        """百分比"""
         try:
             value = float(self.current) / 100
             self.current = str(value)
-            self.display_text = self.current
+            self.display.text = self.current
+            self.update_expression()
         except ValueError:
             pass
     
     def set_operator(self, op):
-        """设置运算符"""
         if self.operator and not self.waiting_for_operand:
             self.calculate()
         
         self.operator = op
         self.previous = self.current
         self.waiting_for_operand = True
+        self.update_expression()
     
     def calculate(self):
-        """执行计算"""
         if not self.operator or self.waiting_for_operand:
             return
         
@@ -107,7 +173,8 @@ class Calculator(BoxLayout):
                 result = prev * curr
             elif self.operator == '÷':
                 if curr == 0:
-                    self.display_text = 'Error'
+                    self.display.text = 'Error'
+                    self.expression.text = 'Cannot divide by zero'
                     self.current = '0'
                     self.previous = ''
                     self.operator = None
@@ -116,153 +183,31 @@ class Calculator(BoxLayout):
             else:
                 return
             
-            # 格式化结果，移除不必要的零
+            # 格式化结果
             if result == int(result):
-                self.current = str(int(result))
+                result_str = str(int(result))
             else:
-                self.current = str(result)
+                result_str = str(result)
             
-            self.display_text = self.current
+            # 显示完整的计算过程
+            if self.operator == '×':
+                op_display = '×'
+            elif self.operator == '÷':
+                op_display = '÷'
+            else:
+                op_display = self.operator
+            
+            self.expression.text = f"{self.previous} {op_display} {self.current} = {result_str}"
+            self.display.text = result_str
+            
+            self.current = result_str
             self.operator = None
             self.previous = ''
             self.waiting_for_operand = True
             
         except ValueError:
-            self.display_text = 'Error'
+            self.display.text = 'Error'
             self.current = '0'
-
-
-class CalculatorApp(App):
-    def build(self):
-        from kivy.lang import Builder
-        
-        kv = '''
-<CalculatorButton>:
-    font_size: 28
-    background_normal: ''
-    background_color: 0.2, 0.2, 0.2, 1
-    color: 1, 1, 1, 1
-    
-    canvas.after:
-        Color:
-            rgba: 0.3, 0.3, 0.3, 1
-        Line:
-            rectangle: self.pos[0], self.pos[1], self.size[0], self.size[1]
-
-<Calculator>:
-    orientation: 'vertical'
-    spacing: 1
-    padding: 5
-    
-    Label:
-        id: display
-        text: root.display_text
-        font_size: 48
-        size_hint_y: 0.25
-        halign: 'right'
-        valign: 'middle'
-        text_size: self.size
-        color: 1, 1, 1, 1
-        canvas.before:
-            Color:
-                rgba: 0.1, 0.1, 0.1, 1
-            Rectangle:
-                pos: self.pos
-                size: self.size
-    
-    BoxLayout:
-        orientation: 'vertical'
-        spacing: 1
-        size_hint_y: 0.75
-        
-        # 第一行: C, ±, %, ÷
-        BoxLayout:
-            spacing: 1
-            CalculatorButton:
-                text: 'C'
-                background_color: 0.3, 0.3, 0.3, 1
-                on_press: root.on_button_press(self.text)
-            CalculatorButton:
-                text: '±'
-                background_color: 0.3, 0.3, 0.3, 1
-                on_press: root.on_button_press(self.text)
-            CalculatorButton:
-                text: '%'
-                background_color: 0.3, 0.3, 0.3, 1
-                on_press: root.on_button_press(self.text)
-            CalculatorButton:
-                text: '÷'
-                background_color: 1, 0.58, 0, 1
-                on_press: root.on_button_press(self.text)
-        
-        # 第二行: 7, 8, 9, ×
-        BoxLayout:
-            spacing: 1
-            CalculatorButton:
-                text: '7'
-                on_press: root.on_button_press(self.text)
-            CalculatorButton:
-                text: '8'
-                on_press: root.on_button_press(self.text)
-            CalculatorButton:
-                text: '9'
-                on_press: root.on_button_press(self.text)
-            CalculatorButton:
-                text: '×'
-                background_color: 1, 0.58, 0, 1
-                on_press: root.on_button_press(self.text)
-        
-        # 第三行: 4, 5, 6, -
-        BoxLayout:
-            spacing: 1
-            CalculatorButton:
-                text: '4'
-                on_press: root.on_button_press(self.text)
-            CalculatorButton:
-                text: '5'
-                on_press: root.on_button_press(self.text)
-            CalculatorButton:
-                text: '6'
-                on_press: root.on_button_press(self.text)
-            CalculatorButton:
-                text: '-'
-                background_color: 1, 0.58, 0, 1
-                on_press: root.on_button_press(self.text)
-        
-        # 第四行: 1, 2, 3, +
-        BoxLayout:
-            spacing: 1
-            CalculatorButton:
-                text: '1'
-                on_press: root.on_button_press(self.text)
-            CalculatorButton:
-                text: '2'
-                on_press: root.on_button_press(self.text)
-            CalculatorButton:
-                text: '3'
-                on_press: root.on_button_press(self.text)
-            CalculatorButton:
-                text: '+'
-                background_color: 1, 0.58, 0, 1
-                on_press: root.on_button_press(self.text)
-        
-        # 第五行: 0, .
-        BoxLayout:
-            spacing: 1
-            CalculatorButton:
-                text: '0'
-                size_hint_x: 2
-                on_press: root.on_button_press(self.text)
-            CalculatorButton:
-                text: '.'
-                on_press: root.on_button_press(self.text)
-            CalculatorButton:
-                text: '='
-                background_color: 1, 0.58, 0, 1
-                on_press: root.on_button_press(self.text)
-'''
-        
-        return Builder.load_string(kv)
 
 
 if __name__ == '__main__':
