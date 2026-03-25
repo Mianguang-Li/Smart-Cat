@@ -1,6 +1,6 @@
-# Android App
+# 小小计算器 (Android App)
 
-这是一个 Kivy Android 应用项目，使用 GitHub Actions 自动打包 APK。
+这是一个用 Kivy 开发的 Android 计算器应用，使用 GitHub Actions 自动打包 APK。
 
 ## 项目结构
 

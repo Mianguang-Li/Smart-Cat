@@ -1,10 +1,10 @@
 [app]
 
 # (str) Title of your application
-title = Smart Calculator
+title = 小小计算器
 
 # (str) Package name
-package.name = smartcalculator
+package.name = xiaoxiaocalc
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.smartcat
