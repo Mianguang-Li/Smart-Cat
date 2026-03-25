@@ -45,7 +45,20 @@ jobs:
         python -m pip install --upgrade pip setuptools wheel
         pip install cython==0.29.36 buildozer==1.4.0
     
-    - name: Build with Buildozer
+    - name: Initial build (generate gradle files)
+      working-directory: android_app
+      env:
+        JAVA_HOME: /usr/lib/jvm/temurin-17-jdk-amd64
+      run: |
+        buildozer android debug || true
+    
+    - name: Patch Gradle to fix jcenter
+      working-directory: android_app
+      run: |
+        find .buildozer -name "build.gradle" -exec sed -i 's|jcenter()|mavenCentral()|g' {} +
+        find .buildozer -name "build.gradle" -exec sed -i 's|google()|google()\nmavenCentral()|g' {} +
+    
+    - name: Retry build
       working-directory: android_app
       env:
         JAVA_HOME: /usr/lib/jvm/temurin-17-jdk-amd64
