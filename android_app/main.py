@@ -4,43 +4,68 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.core.window import Window
+from kivy.config import Config
 
-Window.size = (400, 600)
+# 适配手机全屏
+Config.set('graphics', 'fullscreen', '0')
+Config.set('graphics', 'width', '0')
+Config.set('graphics', 'height', '0')
+Config.set('graphics', 'resizable', '1')
+
+from kivy.metrics import sp, dp
 
 
 class CalculatorApp(App):
     def build(self):
+        from kivy.core.window import Window
+        Window.clearcolor = (0.05, 0.05, 0.05, 1)
+
         self.display_text = '0'
         self.current = '0'
         self.previous = ''
         self.operator = None
         self.waiting_for_operand = False
         
-        # 主布局
-        main_layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
+        # 主布局 - 使用 size_hint 填满屏幕
+        main_layout = BoxLayout(
+            orientation='vertical',
+            padding=dp(10),
+            spacing=dp(8)
+        )
         
         # 表达式显示（显示计算过程）
         self.expression = Label(
             text='',
-            font_size='18sp',
-            size_hint_y=0.1,
+            font_size=sp(18),
+            size_hint_y=0.12,
+            size_hint_x=1,
             color=(0.7, 0.7, 0.7, 1),
-            halign='right'
+            halign='right',
+            valign='middle',
+            text_size=(None, None)
         )
         main_layout.add_widget(self.expression)
         
         # 结果显示屏
         self.display = Label(
             text='0',
-            font_size='48sp',
-            size_hint_y=0.15,
+            font_size=sp(48),
+            size_hint_y=0.18,
+            size_hint_x=1,
             color=(1, 1, 1, 1),
-            halign='right'
+            halign='right',
+            valign='middle',
+            text_size=(None, None)
         )
         main_layout.add_widget(self.display)
         
-        # 按钮网格
-        grid = GridLayout(cols=4, spacing=5, size_hint_y=0.75)
+        # 按钮网格 - 填满剩余空间
+        grid = GridLayout(
+            cols=4,
+            spacing=dp(5),
+            size_hint_y=0.70,
+            size_hint_x=1
+        )
         
         buttons = [
             ('C', (0.3, 0.3, 0.3, 1)),
@@ -71,10 +96,12 @@ class CalculatorApp(App):
         for text, color in buttons:
             btn = Button(
                 text=text,
-                font_size='24sp',
+                font_size=sp(24),
                 background_color=color,
                 background_normal='',
-                color=(1, 1, 1, 1)
+                color=(1, 1, 1, 1),
+                size_hint_x=1,
+                size_hint_y=1
             )
             btn.bind(on_press=self.on_button_press)
             grid.add_widget(btn)
@@ -83,7 +110,6 @@ class CalculatorApp(App):
         return main_layout
     
     def update_expression(self):
-        """更新表达式显示"""
         if self.operator:
             expr = f"{self.previous} {self.operator} {self.current}"
         else:
@@ -183,21 +209,12 @@ class CalculatorApp(App):
             else:
                 return
             
-            # 格式化结果
             if result == int(result):
                 result_str = str(int(result))
             else:
                 result_str = str(result)
             
-            # 显示完整的计算过程
-            if self.operator == '×':
-                op_display = '×'
-            elif self.operator == '÷':
-                op_display = '÷'
-            else:
-                op_display = self.operator
-            
-            self.expression.text = f"{self.previous} {op_display} {self.current} = {result_str}"
+            self.expression.text = f"{self.previous} {self.operator} {self.current} = {result_str}"
             self.display.text = result_str
             
             self.current = result_str
